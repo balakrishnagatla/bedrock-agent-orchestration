@@ -1,0 +1,17 @@
+apiVersion: v2
+name: agent-orchestrator-gateway
+description: >
+  Gateway service that fronts the Bedrock supervisor agent for end users --
+  runs on EKS, authenticates to AWS via IRSA (no static credentials), and
+  exposes a REST endpoint that invokes the supervisor agent alias.
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - bedrock
+  - agents
+  - genai
+  - orchestration
+home: https://github.com/balakrishnagatla/bedrock-agent-orchestration
+maintainers:
+  - name: Platform Engineering

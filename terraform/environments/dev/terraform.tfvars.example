@@ -1,0 +1,13 @@
+aws_region          = "us-east-1"
+deployment_role_arn = "arn:aws:iam::222222222222:role/github-actions-terraform-dev"
+cost_center         = "PLATFORM-ENG-001"
+
+foundation_model            = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+embedding_model_arn         = "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0"
+kb_data_source_bucket_name  = "acme-agent-kb-documents-dev"
+kms_key_arn                 = null
+
+tags = {
+  Owner       = "platform-engineering"
+  Application = "agent-orchestrator-gateway"
+}

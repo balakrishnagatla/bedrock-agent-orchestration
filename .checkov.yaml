@@ -1,0 +1,26 @@
+# Checkov static analysis configuration.
+# Run: checkov -d . --config-file .checkov.yaml
+framework:
+  - terraform
+  - github_actions
+  - dockerfile
+
+# 0.x community modules (aws-ia/bedrock/aws) resolve resources through the
+# awscc provider, whose CloudFormation-schema-derived resources trip a few
+# checks tuned for the aws provider's own naming/argument surface. Skips are
+# scoped and each one has a reason -- do not add a skip without one.
+skip-check:
+  - id: CKV_AWS_144   # S3 cross-region replication: single-region reference
+                       # architecture by design; enable per-org DR policy.
+    reason: "Not applicable to a single-region reference deployment; see docs/ARCHITECTURE.md"
+  - id: CKV2_AWS_62    # S3 event notifications: not required for this KB
+                       # ingestion pattern (Bedrock polls via data source sync).
+    reason: "Bedrock Knowledge Base data source sync does not require S3 event notifications"
+
+soft-fail-on:
+  - CKV_AWS_338 # CloudWatch log retention < 1 year: dev/prod set this
+                # explicitly per-environment; soft-fail so PRs against
+                # non-default retention still surface for review, not block.
+
+compact: true
+quiet: false

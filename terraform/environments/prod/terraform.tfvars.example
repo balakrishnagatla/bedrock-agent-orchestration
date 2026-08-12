@@ -1,0 +1,31 @@
+# Copy to terraform.tfvars (gitignored) and fill in account-specific values,
+# or pass equivalent -var flags / TF_VAR_* environment variables in CI.
+
+aws_region           = "us-east-1"
+deployment_role_arn  = "arn:aws:iam::111111111111:role/github-actions-terraform-prod"
+cost_center          = "PLATFORM-ENG-001"
+
+vpc_name                 = "platform-vpc-prod"
+private_subnet_tier_tag  = "private"
+
+cluster_name        = "agent-orchestration-prod"
+kubernetes_version  = "1.30"
+node_instance_types = ["m6i.large", "m6i.xlarge"]
+node_desired_size   = 3
+node_min_size       = 3
+node_max_size       = 9
+
+embedding_model_arn        = "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0"
+kb_data_source_bucket_name = "acme-agent-kb-documents-prod"
+
+foundation_model = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+guardrail_id     = null
+kms_key_arn      = "arn:aws:kms:us-east-1:111111111111:key/00000000-0000-0000-0000-000000000000"
+
+gateway_namespace             = "agent-orchestrator"
+gateway_service_account_name  = "agent-orchestrator-gateway"
+
+tags = {
+  Owner       = "platform-engineering"
+  Application = "agent-orchestrator-gateway"
+}

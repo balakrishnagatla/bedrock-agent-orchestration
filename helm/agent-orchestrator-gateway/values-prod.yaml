@@ -1,0 +1,19 @@
+# Overrides applied on top of values.yaml for the prod release:
+#   helm upgrade --install agent-orchestrator-gateway ./helm/agent-orchestrator-gateway \
+#     -n agent-orchestrator -f values.yaml -f values-prod.yaml
+replicaCount: 3
+
+autoscaling:
+  minReplicas: 3
+  maxReplicas: 12
+
+datadog:
+  enabled: true
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    cpu: 2000m
+    memory: 1Gi

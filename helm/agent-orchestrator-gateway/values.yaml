@@ -1,0 +1,74 @@
+replicaCount: 3
+
+image:
+  repository: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/agent-orchestrator-gateway
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+  name: agent-orchestrator-gateway
+  # Populated at deploy time from the irsa module's role_arn output --
+  # see terraform/environments/prod/outputs.tf#gateway_irsa_role_arn.
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT_ID:role/agent-orchestration-prod-gateway-irsa"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 12
+  targetCPUUtilizationPercentage: 65
+  targetMemoryUtilizationPercentage: 75
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+env:
+  AWS_REGION: us-east-1
+  BEDROCK_AGENT_ALIAS_ARN: "arn:aws:bedrock:us-east-1:ACCOUNT_ID:agent-alias/SUPERVISOR_AGENT_ID/SUPERVISOR_ALIAS_ID"
+  LOG_LEVEL: info
+  # Datadog APM/DogStatsD sidecar wiring -- disabled by default so the chart
+  # deploys cleanly without a Datadog account; flip on for prod.
+  DD_ENV: prod
+  DD_SERVICE: agent-orchestrator-gateway
+  DD_VERSION: "1.0.0"
+
+datadog:
+  enabled: false
+  apiKeySecretName: datadog-api-key
+  site: datadoghq.com
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"
+
+nodeSelector:
+  workload-type: agent-orchestrator-gateway
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: ScheduleAnyway
